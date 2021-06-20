@@ -42,3 +42,8 @@ float Entity::getScale()
 {
 	return scale;
 }
+
+float Entity::getAngle()
+{
+	return angle;
+}

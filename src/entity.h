@@ -10,6 +10,7 @@ protected:
 	SDL_Rect src;
 	float x, y;
 	float scale = 1;
+	float angle = 0.0f;
 public:
 	Entity();
 	Entity(SDL_Texture* entityTexture, float xPos, float yPos, int textureWidth, int textureHeight);
@@ -20,4 +21,5 @@ public:
 	float getX();
 	float getY();
 	float getScale();
+	float getAngle();
 };

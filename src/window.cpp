@@ -3,6 +3,7 @@
 #include "entity.h"
 #include "bird.h"
 #include "pipe.h"
+#include "background.h"
 
 #include "../sdl/include/SDL.h"
 #include "../sdl/include/SDL_image.h"
@@ -29,17 +30,25 @@ Window::Window(const char* title, int width, int height)
 void Window::loop()
 {
 	SDL_Texture* birdTexture = loadTexture("rsrc/yellowbird-upflap.png");
-	SDL_Texture* pipeTexture = loadTexture("rsrc/pipe-green.png");
+	SDL_Texture* backgroundTexture = loadTexture("rsrc/background-day.png");
+	SDL_Texture* pipeBotTexture = loadTexture("rsrc/pipe-green.png");
 	SDL_Texture* pipeTopTexture = loadTexture("rsrc/pipe-green-top.png");
+	BG bg[6];
+	for (int i = 0; i < 6; i++)
+	{
+		bg[i] = BG(backgroundTexture, i * 425, 0, 288, 512);
+		bg[i].start();
+	}
 	Bird bird(birdTexture, 640, 360, 34, 24);
 	Pipe pipes[12];
 	for (int i = 0; i < 12; i++)
 	{
 		if (i % 2 == 0)
-			pipes[i] = Pipe(pipeTexture, i * 125, 460, 52, 320);
+			pipes[i] = Pipe(pipeBotTexture, i * 125, 400, 52, 320);
 		else 
-			pipes[i] = Pipe(pipeTopTexture, (i - 1) * 125, -280, 52, 320);
+			pipes[i] = Pipe(pipeTopTexture, (i - 1) * 125, -200, 52, 320);
 		pipes[i].start();
+		pipes[i].setBird(&bird);
 	}
 	//Pipe pipe(pipeTexture, 640, 460, 52, 320);
 	//Pipe pipeTop(pipeTopTexture, 640, -280, 52, 320);
@@ -56,6 +65,12 @@ void Window::loop()
 		{
 			if (event.type == SDL_QUIT)
 				running = false;
+			else if (event.type == SDL_KEYDOWN)
+				bird.isSpace = true;
+			else if (event.type == SDL_KEYUP)
+			{
+				bird.isSpace = false;
+			}
 		}
 
 		// Clear screen
@@ -64,6 +79,11 @@ void Window::loop()
 		bird.update();
 		//pipe.update();
 		// Render entities
+		for (int i = 0; i < 6; i++)
+		{
+			bg[i].update();
+			render(bg[i]);
+		}
 		render(bird);
 		for (int i = 0; i < 12; i++)
 		{
@@ -104,7 +124,11 @@ void Window::render(Entity entity)
 	screen.w = entity.getSRC().w * entity.getScale();
 	screen.h = entity.getSRC().h * entity.getScale();
 
-	SDL_RenderCopy(renderer, entity.getTexture(), &src, &screen);
+	float angle = entity.getAngle();
+	SDL_Point center = {0, 0};
+	SDL_RendererFlip flip = SDL_FLIP_NONE;
+
+	SDL_RenderCopyEx(renderer, entity.getTexture(), &src, &screen, angle, &center, flip);
 }
 
 void Window::clear()
