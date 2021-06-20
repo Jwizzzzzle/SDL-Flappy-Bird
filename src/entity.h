@@ -11,7 +11,9 @@ protected:
 	float x, y;
 	float scale = 1;
 public:
+	Entity();
 	Entity(SDL_Texture* entityTexture, float xPos, float yPos, int textureWidth, int textureHeight);
+	virtual void start();
 	virtual void update();
 	SDL_Texture* getTexture();
 	SDL_Rect getSRC();
