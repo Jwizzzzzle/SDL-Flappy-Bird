@@ -1,5 +1,7 @@
 #pragma once
 
+#include "entity.h"
+
 #include "../sdl/include/SDL.h"
 #include "../sdl/include/SDL_image.h"
 
@@ -14,7 +16,7 @@ public:
 private:
 	void loop();
 	SDL_Texture* loadTexture(const char* filePath);
-	void render(SDL_Texture* texture);
+	void render(Entity entity);
 	void clear();
 	void display();
 	void cleanup();

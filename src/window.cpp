@@ -1,5 +1,7 @@
 #include "window.h"
 
+#include "entity.h"
+
 #include "../sdl/include/SDL.h"
 #include "../sdl/include/SDL_image.h"
 
@@ -25,6 +27,7 @@ Window::Window(const char* title, int width, int height)
 void Window::loop()
 {
 	SDL_Texture* texture = loadTexture("rsrc/yellowbird-upflap.png");
+	Entity entity(texture, 0, 15, 34, 24);
 
 	SDL_Event event;
 
@@ -36,7 +39,7 @@ void Window::loop()
 				running = false;
 		}
 		clear();
-		render(texture);
+		render(entity);
 		display();
 		SDL_Delay(16);
 	}
@@ -52,22 +55,22 @@ SDL_Texture* Window::loadTexture(const char* filePath)
 	return texture;
 }
 
-void Window::render(SDL_Texture* texture)
+void Window::render(Entity entity)
 {
 	SDL_Rect src;
 	SDL_Rect screen;
 
 	src.x = 0;
 	src.y = 0;
-	src.w = 34;
-	src.h = 24;
+	src.w = entity.getSRC().w;
+	src.h = entity.getSRC().h;
 
-	screen.x = 0;
-	screen.y = 0;
-	screen.w = 34;
-	screen.h = 24;
+	screen.x = entity.getSRC().x * entity.getScale();
+	screen.y = entity.getSRC().y * entity.getScale();
+	screen.w = entity.getSRC().w * entity.getScale();
+	screen.h = entity.getSRC().h * entity.getScale();
 
-	SDL_RenderCopy(renderer, texture, &src, &screen);
+	SDL_RenderCopy(renderer, entity.getTexture(), &src, &screen);
 }
 
 void Window::clear()
