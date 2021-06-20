@@ -15,20 +15,12 @@ void Pipe::start()
 
 void Pipe::update()
 {
-	if (Collision())
-		std::cout << "DEAD\n";
-
 	x -= 1.0f;
 	if (x <= -100 * scale)
 	{
 		x = 1280 / scale;
 		y -= 10;
 	}
-}
-
-void Pipe::setBird(Bird* bird)
-{
-	player = bird;
 }
 
 bool Pipe::Collision()
@@ -54,4 +46,9 @@ bool Pipe::Collision()
 	}
 
 	return false;
+}
+
+void Pipe::setBird(Bird* bird)
+{
+	player = bird;
 }

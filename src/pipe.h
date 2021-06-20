@@ -11,7 +11,6 @@ public:
 	using Entity::Entity;
 	void start() override;
 	void update() override;
-	void setBird(Bird* bird);
-private:
 	bool Collision();
+	void setBird(Bird* bird);
 };

@@ -32,19 +32,24 @@ void Window::loop()
 	/* TEXTURES */
 	SDL_Texture* birdTexture = loadTexture("rsrc/yellowbird-upflap.png");
 	SDL_Texture* backgroundTexture = loadTexture("rsrc/background-day.png");
+	SDL_Texture* baseTexture = loadTexture("rsrc/base.png");
 	SDL_Texture* pipeBotTexture = loadTexture("rsrc/pipe-green.png");
 	SDL_Texture* pipeTopTexture = loadTexture("rsrc/pipe-green-top.png");
+	SDL_Texture* gameover = loadTexture("rsrc/gameover.png");
 
 	/* BIRD / PLAYER */
 	Bird bird(birdTexture, 640, 360, 34, 24);
 	bird.start();
 
-	/* BACKGROUND */
+	/* BACKGROUND AND BASE */
 	BG bg[6]; 
+	BG base[6];
 	for (int i = 0; i < 6; i++)
 	{
 		bg[i] = BG(backgroundTexture, i * 425, 0, 288, 512);
 		bg[i].start();
+		base[i] = BG(baseTexture, i * 425, 608, 336, 112);
+		base[i].start();
 	}
 
 	/* PIPES */
@@ -52,12 +57,15 @@ void Window::loop()
 	for (int i = 0; i < 12; i++)
 	{
 		if (i % 2 == 0)
-			pipes[i] = Pipe(pipeBotTexture, i * 125, 400, 52, 320);
+			pipes[i] = Pipe(pipeBotTexture, i * 125 + 1280, 400, 52, 320);
 		else 
-			pipes[i] = Pipe(pipeTopTexture, (i - 1) * 125, -200, 52, 320);
+			pipes[i] = Pipe(pipeTopTexture, (i - 1) * 125 + 1280, -200, 52, 320);
 		pipes[i].start();
 		pipes[i].setBird(&bird);
 	}
+
+	/* END SCREEN */
+	Entity endScreen(gameover, 544, 339, 192, 42);
 
 	SDL_Event event;
 
@@ -67,9 +75,9 @@ void Window::loop()
 		{
 			if (event.type == SDL_QUIT)
 				running = false;
-			else if (event.type == SDL_KEYDOWN)
+			else if (event.type == SDL_KEYDOWN && !isGameOver)
 				bird.isSpace = true;
-			else if (event.type == SDL_KEYUP)
+			else if (event.type == SDL_KEYUP && !isGameOver)
 				bird.isSpace = false;
 		}
 
@@ -87,8 +95,17 @@ void Window::loop()
 		for (int i = 0; i < 12; i++)
 		{
 			pipes[i].update();
+			if (pipes[i].Collision())
+				isGameOver = true;
 			render(pipes[i]);
 		}
+		for (int i = 0; i < 6; i++)
+		{
+			base[i].update();
+			render(base[i]);
+		}
+		if (isGameOver)
+			render(endScreen);
 		// Display renderer to window
 		display();
 		// Wait

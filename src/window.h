@@ -11,6 +11,7 @@ private:
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 	bool running = true;
+	bool isGameOver = false;
 public:
 	Window(const char* title, int width, int height);
 private:
